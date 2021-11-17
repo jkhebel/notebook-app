@@ -1,2 +1,2 @@
-# -notebook-app
+# notebook-app
 Note taking app

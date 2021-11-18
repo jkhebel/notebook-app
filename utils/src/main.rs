@@ -1,31 +1,43 @@
-use lipsum::{lipsum, lipsum_title};
-use std::fs::{create_dir_all, remove_dir_all, File};
-use std::io::{Error, Write};
+use std::io::Error;
+use structopt::StructOpt;
+
+pub mod sample_data;
+
+#[derive(StructOpt, Debug)]
+#[structopt(name = "utils", about = "utilty tools")]
+enum Opt {
+  #[structopt(name = "create")]
+  Create {
+    #[structopt(default_value = "../notes", long)]
+    directory: String,
+    #[structopt(default_value = "10", long)]
+    n_notes: usize,
+    #[structopt(default_value = "3", long)]
+    n_pars: usize,
+    #[structopt(default_value = "50", long)]
+    n_words_per_par: usize,
+  },
+  #[structopt(name = "remove")]
+  Remove {
+    #[structopt(default_value = "../notes", long)]
+    directory: String,
+  },
+}
 
 fn main() -> Result<(), Error> {
-  let dir = "../notes";
-  let n_files = 10;
-  let n_pars = 3;
-  let n_words_per_par = 50;
-
-  let _ = remove_dir_all(&dir);
-  create_dir_all(&dir).expect("Unable to create directory.");
-
-  for n in 0..n_files {
-    let title = lipsum_title();
-    let path = [&dir, "/", &n.to_string(), " - ", &title, ".txt"].concat();
-
-    let mut text = "#".to_owned();
-    text.push_str(&title);
-
-    for _ in 0..n_pars {
-      text.push_str("\n\n");
-      text.push_str(&lipsum(n_words_per_par));
+  match Opt::from_args() {
+    Opt::Create {
+      directory,
+      n_notes,
+      n_pars,
+      n_words_per_par,
+    } => {
+      sample_data::create(directory, n_notes, n_pars, n_words_per_par)
+        .expect("Unable to create sample data");
     }
-
-    let mut f = File::create(path).expect("Unable to open file");
-    f.write_all(text.as_bytes()).expect("Unable to write data");
+    Opt::Remove { directory } => {
+      sample_data::remove(directory).expect("Unable to remove sample data")
+    }
   }
-
   Ok(())
 }

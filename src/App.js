@@ -1,5 +1,5 @@
 import Header from "./components/Header";
-import FileList from "./components/FileList";
+import FileList from "./components/EntryList";
 import React, { useEffect, useState } from 'react';
 
 

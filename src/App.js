@@ -1,5 +1,6 @@
 import Header from "./components/Header";
-import React, { useEffect } from 'react';
+import FileList from "./components/FileList";
+import React, { useEffect, useState } from 'react';
 
 
 function check_file_APIs() { // function to check if browser can handle local file API
@@ -11,34 +12,41 @@ function check_file_APIs() { // function to check if browser can handle local fi
   }
 }
 
-check_file_APIs()
-
-function App() {
-  useEffect(() => {
-    let directory; // window.showDirectoryPicker must be attached to a user event
-    document.getElementById('addToFolder').addEventListener('click', async () => {
+async function openLibrary(setDirectory) {
         try {
-            directory = await window.showDirectoryPicker();
-            let fileList = document.getElementById('fileList');
-            fileList.innerHTML = '';
-            for await (const entry of directory.values()) {
-                console.log(entry);
-                let item = document.createElement('li');
-                item.innerHTML = `<strong>${entry.name}</strong> - ${entry.kind}`;
-                fileList.append(item);
-            }
+            setDirectory(await window.showDirectoryPicker());
         } catch(e) {
             console.log(e);
         }
-    });
-  });
+    };
+
+async function updateFileList(directoryHandle, setFileList) {
+  try {
+    const arr = []
+    for await(const e of directoryHandle.values()) arr.push(e);
+    setFileList(arr)
+  } catch(e) {
+    if (directoryHandle) {
+      console.log(e);
+    }
+  }
+}
+
+
+check_file_APIs()
+
+function App() {
+  const [directoryHandle, setDirectory] = useState(null);
+  const [fileList, setFileList] = useState([]);
+  useEffect(() => {updateFileList(directoryHandle, setFileList)}, [directoryHandle])
+
   return (
     <div className="container">
       <Header title="Notebook"/>
-      <button id='addToFolder'>
+      <button id='addToFolder' onClick={() => openLibrary(setDirectory)}>
         Choose Notebook Folder
       </button>
-      <ul id="fileList"></ul>
+      <FileList entries={fileList}/>
     </div>
   );
 }

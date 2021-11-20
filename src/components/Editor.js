@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
 
 function Editor() {
-  const [buffer, setBuffer] = useState("");
-  const [cursor, setCursor] = useState(-1);
+  const [buffer, setBuffer] = useState([""]);
+  const [currentLine, setCurrentLine] = useState("");
+  const [cursor, setCursor] = useState({
+    row: 0, //top-down
+    col: 0, //left-right
+  });
+  const [editorSize, setEditorSize] = useState({
+    width: 0,
+    height: 0,
+  });
+
+  function moveCursor(rows, cols) {
+    setCursor({
+      row: cursor.row + rows,
+      col: cursor.col + cols,
+    })
+  }
 
   async function processKeypress(event) {
     if (!event.metaKey){
@@ -26,61 +41,79 @@ function Editor() {
       case "MetaRight":
         break
       case "Backspace":
-        setBuffer(buffer.slice(0,-1))
+        setCurrentLine(currentLine.slice(0,-1))
         break
       case "Delete":
         break
       case "Space":
         if (buffer.slice(-1) === " "){
-          setBuffer(buffer + "\u00A0") // this breaks normal overflow
+          setCurrentLine(currentLine + "\u00A0") // this breaks normal overflow
         } else {
-          setBuffer(buffer + event.key)
+          setCurrentLine(currentLine + event.key)
         }
         break
       case "Enter": // TODO: fix linebreaks and tabs in HTML (<p></p>)
-        setBuffer(buffer + "\u000D")
+        setCurrentLine(currentLine + "\u000D")
         break
       case "Tab":
-        setBuffer(buffer + "\u0009")
+        setCurrentLine(currentLine + "\u0009")
         break
       case "ArrowDown":
       case "ArrowUp":
         break
       case "ArrowRight":
-        setCursor(cursor + 1)
+        moveCursor(1, 0)
         break
       case "ArrowLeft":
-        setCursor(cursor - 1)
-        console.log("LEFT")
+        moveCursor(-1, 0)
+        break
+      case "Escape":
         break
       default:
-        setBuffer(buffer + event.key)
+        setCurrentLine(currentLine + event.key)
+        moveCursor(event.key.length, 0)
     }
 
   }
 
+  function getEditorSize() {
+    var style = window.getComputedStyle(document.getElementById("Editor"), null);
+    return {
+      width: style.getPropertyValue("width"),
+      height: style.getPropertyValue("height"),
+    };
+  }
+
+  function updateBuffer() {
+    setBuffer(
+      buffer.slice(0,cursor.row)
+        .concat([currentLine],
+          buffer.slice(cursor.row+1))
+    )
+  }
+
   function renderBuffer() {
     console.log(cursor)
-    console.log(buffer.length)
+    console.log(currentLine.length, buffer.length)
     return (
       <>
-        {cursor === -1 ? buffer : buffer.slice(0, cursor + 1)}
+        {currentLine.slice(0, cursor.row)}
         <span className="cursor" style={{
           background:"white",
           color: "white",
           width: "1em",
-          zIndex: "-10"
+          zIndex: "-10", // TODO: make cursor blink in actual css
           }}>
           .
         </span>
-        {cursor === -1 ? "" : buffer.slice(cursor + 1)}
+        {currentLine.slice(cursor.row)}
       </>
     )
   }
 
   return (
     <div
-      className="Editor" style={{
+      className="Editor" id="Editor" style={{
         padding: "5vh 5vw",
         width: "90vw",
         height: "90vh",
@@ -89,7 +122,10 @@ function Editor() {
       }}
       onKeyDown={(e) => {
         // refreshScreen -- I believe useState does this automagically? Maybe.
+        //setEditorSize(getEditorSize())
+        // restrict cursor position to screen
         processKeypress(e)
+        updateBuffer()
       }}
       tabIndex="0"
     >
@@ -99,5 +135,3 @@ function Editor() {
 }
 
 export default Editor
-
-// TODO: FIGURE OUT HOW TO DRAW A CURSOR. THEN MOVE CURSOR.

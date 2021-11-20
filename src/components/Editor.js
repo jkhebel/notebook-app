@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 
 function Editor() {
   const [buffer, setBuffer] = useState("");
+  const [cursor, setCursor] = useState(-1);
 
-  async function main(event) {
-    event.preventDefault()
+  async function processKeypress(event) {
+    if (!event.metaKey){
+      event.preventDefault()
+    }
     switch (event.code) {
+      // TODO: put control keys up here
+      // use event.ctrlKey, event.metaKey, event.altKey etc
+      // to check what is all held down
       case "CapsLock":
       case 'ShiftLeft':
       case 'ShiftRight':
@@ -31,7 +37,7 @@ function Editor() {
           setBuffer(buffer + event.key)
         }
         break
-      case "Enter":
+      case "Enter": // TODO: fix linebreaks and tabs in HTML (<p></p>)
         setBuffer(buffer + "\u000D")
         break
       case "Tab":
@@ -39,12 +45,37 @@ function Editor() {
         break
       case "ArrowDown":
       case "ArrowUp":
+        break
       case "ArrowRight":
+        setCursor(cursor + 1)
+        break
       case "ArrowLeft":
+        setCursor(cursor - 1)
+        console.log("LEFT")
         break
       default:
         setBuffer(buffer + event.key)
     }
+
+  }
+
+  function renderBuffer() {
+    console.log(cursor)
+    console.log(buffer.length)
+    return (
+      <>
+        {cursor === -1 ? buffer : buffer.slice(0, cursor + 1)}
+        <span className="cursor" style={{
+          background:"white",
+          color: "white",
+          width: "1em",
+          zIndex: "-10"
+          }}>
+          .
+        </span>
+        {cursor === -1 ? "" : buffer.slice(cursor + 1)}
+      </>
+    )
   }
 
   return (
@@ -56,12 +87,17 @@ function Editor() {
         color: "white",
         overflowWrap: "normal"
       }}
-      onKeyDown={(e) => main(e)}
+      onKeyDown={(e) => {
+        // refreshScreen -- I believe useState does this automagically? Maybe.
+        processKeypress(e)
+      }}
       tabIndex="0"
     >
-      {buffer}
+      {renderBuffer()}
     </div>
   )
 }
 
 export default Editor
+
+// TODO: FIGURE OUT HOW TO DRAW A CURSOR. THEN MOVE CURSOR.

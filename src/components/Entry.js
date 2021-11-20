@@ -1,6 +1,18 @@
-function Entry({entry_name}) {
+function Entry({ entry, onClickEntry }) {
+  async function getText(entry) {
+    const file = await entry.getFile();
+    const text = await file.text();
+    return text;
+  }
   return (
-    <li>{entry_name}</li>
+    <li
+      onClick={async () => {
+        const text = await getText(entry);
+        onClickEntry(text);
+      }}
+    >
+      {entry.name}
+    </li>
   );
 }
 

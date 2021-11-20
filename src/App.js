@@ -1,10 +1,11 @@
 import Header from "./components/Header";
-import FileList from "./components/EntryList";
+import EntryList from "./components/EntryList";
+import Note from "./components/Note";
 import React, { useEffect, useState } from 'react';
 
 
 function check_file_APIs() { // function to check if browser can handle local file API
-  if (window.File && window.FileReader && window.FileList && window.Blob && window.showDirectoryPicker) {
+  if (window.File && window.FileReader && window.EntryList && window.Blob && window.showDirectoryPicker) {
     // Great success! All the File APIs are supported.
     console.log("File APIs are supported!")
   } else {
@@ -20,11 +21,11 @@ async function openLibrary(setDirectory) {
         }
     };
 
-async function updateFileList(directoryHandle, setFileList) {
+async function updateEntryList(directoryHandle, setEntryList) {
   try {
     const arr = []
     for await(const e of directoryHandle.values()) arr.push(e);
-    setFileList(arr)
+    setEntryList(arr)
   } catch(e) {
     if (directoryHandle) {
       console.log(e);
@@ -37,8 +38,10 @@ check_file_APIs()
 
 function App() {
   const [directoryHandle, setDirectory] = useState(null);
-  const [fileList, setFileList] = useState([]);
-  useEffect(() => {updateFileList(directoryHandle, setFileList)}, [directoryHandle])
+  const [entryList, setEntryList] = useState([]);
+  const [noteContent, setNoteContent] = useState();
+
+  useEffect(() => {updateEntryList(directoryHandle, setEntryList)}, [directoryHandle])
 
   return (
     <div className="container">
@@ -46,7 +49,8 @@ function App() {
       <button id='addToFolder' onClick={() => openLibrary(setDirectory)}>
         Choose Notebook Folder
       </button>
-      <FileList entries={fileList}/>
+      <EntryList entries={entryList} onClickEntry={setNoteContent} />
+      <Note text={noteContent} />
     </div>
   );
 }

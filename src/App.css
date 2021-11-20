@@ -30,29 +30,6 @@
   display: flex;
   margin: 50px;
   color: white;
-  align-items: flex-start;
-  justify-content: flex-start;
-  font-size: calc(40px + 2vmin);
-  color: white;
-}
-
-.Title {
-  margin-left: 50px;
-  margin-top: 50px;
-  font-family: "Poiret One", cursive;
-}
-
-.Creators {
-  margin-left: 50px;
-  margin-top: 10px;
-  font-family: "Poiret One", cursive;
-  font-size: 25px;
-}
-
-.Main {
-  display: flex;
-  margin: 50px;
-  color: white;
   font-size: calc(10px + 2vmin);
   font-family: "Quicksand", sans-serif;
 }

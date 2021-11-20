@@ -46,7 +46,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header title="Notebook"/>
+      <Header title="Notable"/>
       <button id='addToFolder' onClick={() => openLibrary(setDirectory)}>
         Choose Notebook Folder
       </button>

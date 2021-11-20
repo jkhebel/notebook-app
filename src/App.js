@@ -2,6 +2,7 @@ import "./App.css";
 import Header from "./components/Header";
 import EntryList from "./components/EntryList";
 import Note from "./components/Note";
+import Editor from "./components/Editor"
 import React, { useEffect, useState } from 'react';
 
 
@@ -46,16 +47,22 @@ function App() {
 
   return (
     <div className="App">
-      <Header title="Notable"/>
-      <button id='addToFolder' onClick={() => openLibrary(setDirectory)}>
-        Choose Notebook Folder
-      </button>
-      <div className="Main">
-        <EntryList entries={entryList} onClickEntry={setNoteContent} />
-        <Note text={noteContent} />
-      </div>
+      <Editor />
     </div>
   );
+
+  // return (
+  //   <div className="App">
+  //     <Header title="Notable"/>
+  //     <button id='addToFolder' onClick={() => openLibrary(setDirectory)}>
+  //       Choose Notebook Folder
+  //     </button>
+  //     <div className="Main">
+  //       <EntryList entries={entryList} onClickEntry={setNoteContent} />
+  //       <Note text={noteContent} />
+  //     </div>
+  //   </div>
+  // );
 }
 
 export default App;

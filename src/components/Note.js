@@ -1,6 +1,6 @@
 function Note({text}) {
   return (
-    <div>
+    <div className="MainSelected">
       {text}
     </div>
   )

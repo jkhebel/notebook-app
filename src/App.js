@@ -44,13 +44,15 @@ function App() {
   useEffect(() => {updateEntryList(directoryHandle, setEntryList)}, [directoryHandle])
 
   return (
-    <div className="container">
+    <div className="App">
       <Header title="Notebook"/>
       <button id='addToFolder' onClick={() => openLibrary(setDirectory)}>
         Choose Notebook Folder
       </button>
-      <EntryList entries={entryList} onClickEntry={setNoteContent} />
-      <Note text={noteContent} />
+      <div className="Main">
+        <EntryList entries={entryList} onClickEntry={setNoteContent} />
+        <Note text={noteContent} />
+      </div>
     </div>
   );
 }

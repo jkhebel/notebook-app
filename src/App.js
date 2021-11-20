@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-import logo from "./logo.svg";
 import "./App.css";
-=======
 import Header from "./components/Header";
 import EntryList from "./components/EntryList";
 import Note from "./components/Note";
@@ -39,7 +36,6 @@ async function updateEntryList(directoryHandle, setEntryList) {
 
 
 check_file_APIs()
->>>>>>> file-reader-2021-11-18
 
 function App() {
   const [directoryHandle, setDirectory] = useState(null);
@@ -50,15 +46,6 @@ function App() {
 
   return (
     <div className="App">
-<<<<<<< HEAD
-      <header className="App-header">
-        <div className="Title">Notable</div>
-        <div className="Creators">A creation by Jai and Ramesh</div>
-      </header>
-      <div className="Main">
-        <div className="MainList">Notes</div>
-        <div className="MainSelected">Current Note</div>
-=======
       <Header title="Notebook"/>
       <button id='addToFolder' onClick={() => openLibrary(setDirectory)}>
         Choose Notebook Folder
@@ -66,7 +53,6 @@ function App() {
       <div className="Main">
         <EntryList entries={entryList} onClickEntry={setNoteContent} />
         <Note text={noteContent} />
->>>>>>> file-reader-2021-11-18
       </div>
     </div>
   );

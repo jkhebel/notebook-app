@@ -4,7 +4,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 function Line({text}) { // line component
   return (
     <p className="line">
-      - {text}
+      > {text}
     </p>
   )
 }
@@ -12,7 +12,7 @@ function Line({text}) { // line component
 function CurrentLine({text, pos}) {
   return (
     <p className="line cursorLine">
-    - {text.slice(0, pos)}
+    > {text.slice(0, pos)}
     <span className="cursor"
       style={{ // temporary inline style
         background:"pink",
@@ -216,6 +216,7 @@ function Editor({text=""}) {
         width: "90vw",
         height: "90vh",
         color: "white",
+        textAlign: "left",
         overflowWrap: "normal"
       }}
       onKeyDown={(e) => { processKeypress(e) }}

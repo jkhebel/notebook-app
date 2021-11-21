@@ -52,7 +52,7 @@ lorem ipsum 3`
 
   return (
     <div className="App">
-      <Editor text={lipsum}/>
+      <Editor text={""}/>
     </div>
   );
 

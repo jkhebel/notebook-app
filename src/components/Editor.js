@@ -1,34 +1,62 @@
-import React, { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 
-function Editor() {
+function Line({text}) { // line component
+  return (
+    <p className="line">
+      - {text}
+    </p>
+  )
+}
+
+function CurrentLine({text, pos}) {
+  return (
+    <p className="line cursorLine">
+    - {text.slice(0, pos)}
+    <span className="cursor"
+      style={{ // temporary inline style
+        background:"pink",
+        color: "pink",
+        width: "1em",
+        marginRight: "-0em", // set opacity and add offset
+        zIndex: "-10", // TODO: make cursor blink in actual css
+        }}>
+      .
+    </span>
+    {text.slice(pos)}
+    </p>
+  )
+}
+
+
+function Editor({text=""}) {
   // state vaariables
-  const [buffer, setBuffer] = useState([""]); // store raw string in a buffer
-  const [currentLine, setCurrentLine] = useState("lorem ipsum"); // only modify current line
+  const [buffer, setBuffer] = useState(text.split("\n")); // store raw string in a buffer
+  const [currentLine, setCurrentLine] = useState(buffer[0]); // only modify current line
   const [cursor, setCursor] = useState({ // store cursor position
-    row: 0, //top-down
-    col: 0, //left-right
+    row: 0, //top->down
+    col: 0, //left->right
   });
   const [editorSize, setEditorSize] = useState({ // store window size
     width: 0,
     height: 0,
   });
 
-  function moveCursor(addRows, addCols) {
+  function moveCursor(addRows, addCols, maxRows, maxCols) {
     // quick setter to move cursor
+    maxRows = maxRows || buffer.length - 1
+    maxCols = maxCols || currentLine.length
+    // calculate new cursor positions
     let newRow = cursor.row + addRows
     let newCol = cursor.col + addCols
-
-    // prevent cursor from leaving scope of buffer
-    newCol = newCol > currentLine.length ? currentLine.length : newCol
+    // prevent cursor from exceeding scope of buffer
+    newCol = newCol > maxCols ? maxCols : newCol
+    newRow = newRow > maxRows ? maxRows : newRow
+    // prevent cursor from moving below scope of buffer
     newCol = newCol < 0 ? 0 : newCol
-    newRow = newRow > buffer.length ? buffer.length : newRow
     newRow = newRow < 0 ? 0 : newRow
-
     // set new cursor position
-    setCursor({
-      row: newRow,
-      col: newCol,
-    })
+    setCursor({ row: newRow, col: newCol,})
   }
 
   function addAtCursor(text) {
@@ -39,17 +67,45 @@ function Editor() {
         + currentLine.slice(cursor.col)
     )
     // update cursor position
-    moveCursor(0, text.length)
+    moveCursor(0, text.length,  buffer.length - 1, currentLine.length + 1)
   }
 
   function deleteAtCursor() {
-    // move cursor length of char first
-    moveCursor(0, -currentLine[cursor.col-1].length)
-    setCurrentLine( // slice out char
-      currentLine.slice(0, cursor.col - 1)
-      + currentLine.slice(cursor.col)
-    )
+    if (currentLine === "" || cursor.col === 0){
+      // delete line break if not first line
+      if (cursor.row > 0) {
+        const lineAbove = buffer[cursor.row - 1]
+        const newLine = lineAbove + currentLine
+        setBuffer(
+          buffer.slice(0, cursor.row - 1).concat(
+          [newLine],
+          buffer.slice(cursor.row + 1)
+          )
+        )
+        moveCursor(-1, lineAbove.length)
+      }
+    } else {
+      const len = currentLine[cursor.col-1].length // get length of char
+      setCurrentLine( // slice out char
+        currentLine.slice(0, cursor.col - 1)
+        + currentLine.slice(cursor.col)
+      )
+      moveCursor(0, -len)//update cursor
 
+    }
+  }
+
+  function insertLineBreakAtCursor() {
+    const lineAbove = currentLine.slice(0,cursor.col)
+    const newLine = currentLine.slice(cursor.col)
+    setBuffer(
+      buffer.slice(0, cursor.row).concat(
+        [lineAbove], [newLine],
+        buffer.slice(cursor.row + 1)
+      )
+    )
+    setCurrentLine(newLine);
+    moveCursor(1, -cursor.col, buffer.length);
   }
 
   async function processKeypress(event) {
@@ -85,14 +141,17 @@ function Editor() {
           addAtCursor(event.key)
         }
         break
-      case "Enter": // TODO: fix linebreaks and tabs in HTML (<p></p>)
-        addAtCursor("\u000D")
+      case "Enter":
+        insertLineBreakAtCursor()
         break
       case "Tab":
         addAtCursor("\u0009") // TODO: tabs are no bueno?
         break
       case "ArrowDown":
+        moveCursor(1, 0)
+        break;
       case "ArrowUp":
+        moveCursor(-1, 0)
         break
       case "ArrowRight":
         moveCursor(0, 1)
@@ -108,43 +167,46 @@ function Editor() {
 
   }
 
-  function getEditorSize() {
-    // get the editor div and compute it's size
-    var style = window.getComputedStyle(
-      document.getElementById("Editor"), null
-    );
-    return {
-      width: style.getPropertyValue("width"),
-      height: style.getPropertyValue("height"),
-    };
-  }
-
   function updateBufferAtCurrentLine() {
     // update the buffer at the current line
     setBuffer(
-      buffer.slice(0,cursor.row)
-        .concat([currentLine], // replace old line with new line
-          buffer.slice(cursor.row+1))
+      buffer.map((line, idx) => {
+        if (idx === cursor.row) {return currentLine} else return line
+      })
     )
   }
 
   function renderBuffer() {
-    return ( // TODO: make it show multiple lines
+    return (
       <>
-        {currentLine.slice(0, cursor.col)}
-        <span className="cursor"
-          style={{ // temporary inline style
-            background:"white",
-            color: "white",
-            width: "1em",
-            zIndex: "-10", // TODO: make cursor blink in actual css
-            }}>
-          .
-        </span>
-        {currentLine.slice(cursor.col)}
+        {buffer.map((line, idx) => {
+          if (idx === cursor.row) {
+            return <CurrentLine key={idx} text={line} pos={cursor.col} />
+          } else {
+            return <Line key={idx} text={line} />
+          }
+        })}
       </>
     )
   }
+
+  // when current line state changes, update buffer state
+  useEffect(updateBufferAtCurrentLine, [currentLine])
+  // when cursor row changes, switch current line
+  useEffect(() => {
+    setCurrentLine(buffer[cursor.row])
+  }, [cursor.row])
+
+  // update editorSize state on resize
+  useLayoutEffect(() => {
+    function updateSize() {
+      setEditorSize({width: window.innerWidth, height: window.innerHeight});
+    }
+    window.addEventListener('resize', updateSize);
+    updateSize();
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
 
   return (
     <div
@@ -156,13 +218,7 @@ function Editor() {
         color: "white",
         overflowWrap: "normal"
       }}
-      onKeyDown={(e) => { // run every time a key is pressed
-        // refreshScreen -- I believe useState does this automagically? Maybe.
-        //setEditorSize(getEditorSize())
-        // restrict cursor position to screen
-        processKeypress(e)
-        updateBufferAtCurrentLine()
-      }}
+      onKeyDown={(e) => { processKeypress(e) }}
       tabIndex="0"
     >
       {renderBuffer()}
@@ -171,3 +227,5 @@ function Editor() {
 }
 
 export default Editor
+
+// TODO: State is getting effed up. Buffer is behind, so it's updating itself with an older version of itself.

@@ -45,9 +45,14 @@ function App() {
 
   useEffect(() => {updateEntryList(directoryHandle, setEntryList)}, [directoryHandle])
 
+  let lipsum =
+  `lorem ipsum 1
+lorem ipsum 2
+lorem ipsum 3`
+
   return (
     <div className="App">
-      <Editor />
+      <Editor text={lipsum}/>
     </div>
   );
 

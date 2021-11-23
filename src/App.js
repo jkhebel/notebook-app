@@ -1,7 +1,8 @@
 import "./App.css";
 import Header from "./components/Header";
 import EntryList from "./components/EntryList";
-import Note from "./components/Note";
+//import Note from "./components/Note";
+import Editor from "./components/Editor"
 import React, { useEffect, useState } from 'react';
 
 
@@ -40,9 +41,15 @@ check_file_APIs()
 function App() {
   const [directoryHandle, setDirectory] = useState(null);
   const [entryList, setEntryList] = useState([]);
-  const [noteContent, setNoteContent] = useState();
+  const [fileHandler, setFileHandler] = useState();
 
   useEffect(() => {updateEntryList(directoryHandle, setEntryList)}, [directoryHandle])
+
+  // return (
+  //   <div className="App">
+  //     <Editor text={""}/>
+  //   </div>
+  // );
 
   return (
     <div className="App">
@@ -51,8 +58,12 @@ function App() {
         Choose Notebook Folder
       </button>
       <div className="Main">
-        <EntryList entries={entryList} onClickEntry={setNoteContent} />
-        <Note text={noteContent} />
+        <EntryList entries={entryList} onClickEntry={setFileHandler} />
+        {(() => {
+          if (fileHandler) {
+            return <Editor input={fileHandler}/>;
+          }
+        })()}
       </div>
     </div>
   );

@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 
 function Line({text}) { // line component
   return (
     <p className="line">
-      > {text}
+      {text}
     </p>
   )
 }
@@ -12,7 +13,7 @@ function Line({text}) { // line component
 function CurrentLine({text, pos}) {
   return (
     <p className="line cursorLine">
-    > {text.slice(0, pos)}
+    {text.slice(0, pos)}
     <span className="cursor"
       style={{ // temporary inline style
         background:"pink",
@@ -29,10 +30,12 @@ function CurrentLine({text, pos}) {
 }
 
 
-function Editor({text=""}) {
+function Editor({input=null}) {
   // state vaariables
-  const [buffer, setBuffer] = useState(text.split("\n")); // store raw string in a buffer
-  const [currentLine, setCurrentLine] = useState(buffer[0]); // only modify current line
+  const [fileHandler, setFileHandler ] = useState(input); // store file handler
+  const [file, setFile] = useState(null); // store file in a buffer
+  const [buffer, setBuffer] = useState([]); // store raw string in a buffer
+  const [currentLine, setCurrentLine] = useState(""); // only modify current line
   const [cursor, setCursor] = useState({ // store cursor position
     row: 0, //top->down
     col: 0, //left->right
@@ -191,11 +194,28 @@ function Editor({text=""}) {
   }
 
   // when current line state changes, update buffer state
+  // load file from props on start
+  useEffect(async () => {
+    try {
+      setFile(await fileHandler.getFile());
+    } catch (e) {
+      console.log(e)
+    }
+  });
+  // update the buffer when the file changes
+  useEffect(async () => {
+    try {
+      setBuffer((await file.text()).split("\n"))
+    } catch (err) {
+      console.log(err)
+    }
+  }, [file]);
+
   useEffect(updateBufferAtCurrentLine, [currentLine])
   // when cursor row changes, switch current line
   useEffect(() => {
     setCurrentLine(buffer[cursor.row])
-  }, [cursor.row])
+  }, [cursor.row, buffer])
 
   // update editorSize state on resize
   useLayoutEffect(() => {

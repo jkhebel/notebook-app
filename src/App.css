@@ -1,7 +1,8 @@
 .App {
   text-align: center;
   background-color: #233548;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
 }
 
 .App-header {
@@ -30,24 +31,43 @@
   display: flex;
   margin: 50px;
   color: white;
-  font-size: calc(10px + 2vmin);
+  font-size: calc(0px + 2vmin);
   font-family: "Quicksand", sans-serif;
 }
 
 .MainList {
   display: flex;
-  padding: 10px;
-  min-height: 60vh;
+  /* padding: 10px; */
+  height: 60vh;
   width: 30%;
   border-radius: 20px;
-  border: 2px solid white;
+  /* border: 2px solid white; */
+  overflow-y: scroll;
+  background-color: None;
+  text-align: left;
 }
 
 .MainSelected {
   display: flex;
   margin-left: 25px;
-  padding: 10px;
+  padding: 20px;
+  height: 60vh;
   border-radius: 20px;
   border: 2px solid white;
+  background-color: #233548;
   width: 60%;
+  overflow-y: scroll;
+}
+
+.txtEditor {
+  background-color: #233548;
+  color: white;
+  border: none;
+  resize: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
 }

@@ -193,6 +193,9 @@ function ReactEditor({ input = null }) {
   }
 
   // when current line state changes, update buffer state
+  useEffect(() => {
+    setFileHandler(input);
+  }, [input]);
   // load file from props on start
   useEffect(async () => {
     try {
@@ -200,7 +203,7 @@ function ReactEditor({ input = null }) {
     } catch (e) {
       console.log(e);
     }
-  });
+  }, [fileHandler]);
   // update the buffer when the file changes
   useEffect(async () => {
     try {
@@ -228,17 +231,8 @@ function ReactEditor({ input = null }) {
 
   return (
     <div
-      className="Editor"
+      className="txtEditor MainSelected"
       id="Editor"
-      style={{
-        // temporary inline styles
-        padding: "5vh 5vw",
-        width: "90vw",
-        height: "90vh",
-        color: "white",
-        textAlign: "left",
-        overflowWrap: "normal",
-      }}
       onKeyDown={(e) => {
         processKeypress(e);
       }}

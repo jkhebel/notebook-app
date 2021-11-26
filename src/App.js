@@ -56,6 +56,7 @@ function App() {
       }
     }
     getText(fileHandler)
+    setContent(c => c+1)
   }, [fileHandler])
 
   // return (
@@ -107,11 +108,15 @@ function App() {
         Choose Notebook Folder
       </button> */}
       <div className="Main">
-        <EntryList entries={entryList} onClickEntry={setFileHandler} />
+        <EntryList
+          entries={entryList}
+          onClickEntry={setFileHandler}
+        />
         {(() => {
-          if (false) {
+          if (fileHandler) {
             return <ReactEditor input={fileHandler}/>;
-          } else {
+          }
+          else {
             return <textarea className="txtEditor MainSelected" defaultValue={content} />
           }
         })()}

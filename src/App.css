@@ -48,7 +48,7 @@
 }
 
 .MainSelected {
-  display: flex;
+  /* display: flex; */
   margin-left: 25px;
   padding: 20px;
   height: 60vh;
@@ -57,12 +57,13 @@
   background-color: #233548;
   width: 60%;
   overflow-y: scroll;
+  text-align: left;
 }
 
 .txtEditor {
   background-color: #233548;
   color: white;
-  border: none;
+  /* border: none; */
   resize: none;
 }
 
@@ -70,4 +71,8 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
+}
+
+p {
+  min-height: 1em;
 }

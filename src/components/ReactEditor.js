@@ -7,23 +7,11 @@ function Line({ text }) {
   return <p className="line">{text}</p>;
 }
 
-function CurrentLine({ text, pos }) {
+function CurrentLine({ text, pos, focused }) {
   return (
     <p className="line cursorLine">
       {text.slice(0, pos)}
-      <span
-        className="cursor"
-        style={{
-          // temporary inline style
-          background: "pink",
-          color: "pink",
-          width: "1em",
-          marginRight: "-0em", // set opacity and add offset
-          zIndex: "-10", // TODO: make cursor blink in actual css
-        }}
-      >
-        .
-      </span>
+      {focused ? <span className="cursor"> </span> : ""}
       {text.slice(pos)}
     </p>
   );
@@ -45,6 +33,10 @@ function ReactEditor({ input = null }) {
     width: 0,
     height: 0,
   });
+
+  const [focused, setFocused] = React.useState(false)
+  const onFocus = () => setFocused(true)
+  const onBlur = () => setFocused(false)
 
   function moveCursor(addRows, addCols, maxRows, maxCols) {
     // quick setter to move cursor
@@ -183,7 +175,9 @@ function ReactEditor({ input = null }) {
       <>
         {buffer.map((line, idx) => {
           if (idx === cursor.row) {
-            return <CurrentLine key={idx} text={line} pos={cursor.col} />;
+            return <CurrentLine
+              key={idx} text={line} pos={cursor.col} focused={focused}
+            />;
           } else {
             return <Line key={idx} text={line} />;
           }
@@ -237,6 +231,8 @@ function ReactEditor({ input = null }) {
         processKeypress(e);
       }}
       tabIndex="0"
+      onFocus={onFocus}
+      onBlur={onBlur}
     >
       {renderBuffer()}
     </pre>

@@ -10,6 +10,7 @@ const NoteList = ({ entries, onClickEntry }) => {
           className="d-flex justify-content-between align-items-start"
           onClick={() => onClickEntry(e)}
           href={"#" + i}
+          key={i}
         >
           <div className="ms-2 me-auto">
             <div className="fw-bold">

@@ -42,26 +42,29 @@
 }
 
 .NoteList {
-  background-color: None;
   overflow-y: scroll;
   height: 93vh;
   width: 20vw;
-  background-color: #233548;
   font-size: 0.8em;
 }
 
 .Editor {
-  /* display: flex; */
   width: 80vw;
   padding: 50px;
   margin: 0px;
-  background-color: #233548;
   overflow-y: scroll;
   white-space: pre-wrap;
-  color: white;
   border: none;
-  /* resize: none; */
+  resize: none;
 }
+
+.cursor {
+  background-color: pink;
+  color: pink;
+  width: 1em;
+}
+/* marginRight: "-0em"; set opacity and add offset */
+/* TODO: make cursor blink in actual css */
 
 input:focus,
 textarea:focus,

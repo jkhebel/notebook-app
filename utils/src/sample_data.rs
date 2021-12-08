@@ -11,9 +11,9 @@ pub fn create(
   let _ = remove_dir_all(&dir);
   create_dir_all(&dir).expect("Unable to create directory.");
 
-  for n in 0..n_notes {
+  for _n in 0..n_notes {
     let title = lipsum_title();
-    let path = [&dir, "/", &n.to_string(), " - ", &title, ".txt"].concat();
+    let path = [&dir, "/", &title, ".txt"].concat();
 
     let mut text = "#".to_owned();
     text.push_str(&title);

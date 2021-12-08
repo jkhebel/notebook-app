@@ -230,8 +230,8 @@ function ReactEditor({ input = null }) {
   }, []);
 
   return (
-    <div
-      className="txtEditor MainSelected"
+    <pre
+      className="Editor"
       id="Editor"
       onKeyDown={(e) => {
         processKeypress(e);
@@ -239,7 +239,7 @@ function ReactEditor({ input = null }) {
       tabIndex="0"
     >
       {renderBuffer()}
-    </div>
+    </pre>
   );
 }
 
